@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <button
+        class="btn btn-primary"
+        (click)="onDisplayDetails()"
+      >
+        Display Details
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12" *ngIf="displayDetails">
+      <h3>Details</h3>
+        <p>These are the Details: hello</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h3>Clicks</h3>
+      <p>Total clicks: {{ totalClicks }}</p>
+      <div>
+        Timestamps:
+        <div *ngIf="totalClicks !== 0; else noData">
+          <ul *ngFor="let click of clicks; index as i">
+            <li
+              [ngStyle]="{backgroundColor: getClickStyle(i)}"
+              [ngClass]="getClickClass(i)"
+            >
+              {{ click }}
+            </li>
+          </ul>
+        </div>
+        <ng-template #noData>
+          No data
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
