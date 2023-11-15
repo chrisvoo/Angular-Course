@@ -10,6 +10,8 @@ These notes and the code are taken from the [udemy course](https://www.udemy.com
   - [Section 2](#section-2)
     - [Directives](#directives)
     - [Resources](#resources-1)
+  - [Section 3 / 4](#section-3--4)
+  - [Section 5](#section-5)
 
 
 ## Angular CLI cheatsheet
@@ -85,3 +87,86 @@ A built-in attribute directive is `ngStyle`. It's useful when you want to bind a
 ### Resources
 
 * [Built-in directives](https://angular.io/guide/built-in-directives)
+
+## Section 3 / 4
+
+Create a new project without routing, no strict mode:
+
+```bash
+ng new --no-strict --routing false course-project
+```
+
+For debugging purposes, you can set a breakpoint into the TypeScript components  by accessing `webpack://` subfolders in teh *Sources* tab in the developer console.
+
+## Section 5
+
+By default, all properties defined in a component are accessible inside a component. You have to explicitly say which properties can be set by the outside components.
+So for example, considering a component named `server-element` inside our main `app` component, we can pass a property belonging to `app` to `server-element`:
+
+```html
+<div class="container">
+  <app-cockpit></app-cockpit>
+  <hr>
+  <div class="row">
+    <div class="col-xs-12">
+      <app-server-element
+        [element]="serverElement"
+        *ngFor="let serverElement of serverElements"
+      ></app-server-element>
+    </div>
+  </div>
+</div>
+```
+
+Here while we're looping through `serverElements`, we can bind the variable `serverElement` to the prperty `element` inside `server-element`:
+
+```typescript
+import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-server-element',
+  templateUrl: './server-element.component.html',
+  styleUrls: ['./server-element.component.css']
+})
+export class ServerElementComponent {
+  @Input() element: { name: string, type: string, content: string }
+}
+```
+
+On the contrary, if we want to pass the data from an inner component to its parent, we can use `EventEmitter` and `@Output` directive:
+
+```html
+<!-- parent -->
+<div class="container">
+  <app-cockpit
+    (serverCreated)="onServerAdded($event)"
+    (bluePrintCreated)="onBlueprintAdded($event)"
+  ></app-cockpit>
+  ...
+```
+
+and
+
+```typescript
+export class CockpitComponent {
+  @Output() serverCreated = new EventEmitter<{serverName: string, serverContent: string}>();
+  @Output() bluePrintCreated = new EventEmitter<{serverName: string, serverContent: string}>();
+
+  newServerName = '';
+  newServerContent = '';
+
+  onAddServer() {
+    this.serverCreated.emit({
+      serverName: this.newServerName,
+      serverContent: this.newServerContent
+    })
+  }
+
+  onAddBlueprint() {
+    this.bluePrintCreated.emit({
+      serverName: this.newServerName,
+      serverContent: this.newServerContent
+    })
+  }
+}
+```
