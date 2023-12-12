@@ -10,10 +10,23 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Recipes</a>
+          <a
+            class="nav-link active"
+            aria-current="page"
+            href="#"
+            (click)="sectionClicked($event)"
+          >
+            Recipes
+        </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Shopping List</a>
+          <a
+            class="nav-link"
+            href="#"
+            (click)="sectionClicked($event)"
+          >
+            Shopping List
+          </a>
         </li>
         <!-- <li class="nav-item">
           <a class="nav-link disabled" aria-disabled="true">Disabled</a>

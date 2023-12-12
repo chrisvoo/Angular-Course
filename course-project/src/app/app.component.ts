@@ -7,4 +7,16 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Course project';
+  activeSection = 'recipe'
+
+  onClickedMenuItem($event) {
+    switch ($event) {
+      case 'Recipes':
+        this.activeSection = 'recipe';
+        break;
+      case 'Shopping List':
+        this.activeSection = 'shopping_list';
+        break;
+    }
+  }
 }
