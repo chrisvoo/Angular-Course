@@ -340,4 +340,193 @@ In general, you can register the service:
 * [Services](https://angular.io/guide/architecture-services)
 * [Dependency Injection in Angular](https://angular.io/guide/dependency-injection-overview)
 
+## Section 11: Routing
 
+The routing module (which can be automatically created by Angular CLI) is the following:
+
+```typescript
+import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+
+const routes: Routes = [
+  {
+    path: '/servers',
+    component: ListComponent,
+    children: [
+      { path: ':id', component: SingleComponent }
+    ]
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+```
+Add `AppRoutingModule` to your `AppModule`'s imports and then you can use 
+`<router-outlet></router-outlet>` in your `app.component.html` template.  
+if you want you can still use the Angular CLI:
+
+```bash
+ng generate module app-routing --flat --module=app
+```
+The flat option will prevent the module from being in its folder and the module option will be sure to import the new
+module into the AppModule.  
+The order of routes is important because the Router uses a first-match wins strategy when 
+matching routes, so more specific routes should be placed above less specific routes. 
+List routes with a static path first, followed by an empty path route, which matches the 
+default route. The wildcard route comes last because it matches every URL and the Router 
+selects it only if no other routes match first.  
+After that, use [routerLink](https://angular.io/guide/router-reference#router-links) to 
+redirect to the correct component and render a "new page".
+
+### Accessing route params
+
+* **Snapshot**: you get the current snapshot of this route at a particular moment in time. 
+(Contains the information about a route associated with a component loaded in an outlet at a 
+particular moment in time. [ActivatedRouteSnapshot](https://angular.io/api/router/ActivatedRouteSnapshot#description) 
+can also be used to traverse the router state
+tree.)
+* **params**: is A Observable and you can subscribe to it. (An observable of the matrix 
+parameters scoped to this route.). [See Docs here](https://angular.io/api/router/ActivatedRoute#description).
+
+Example:
+
+```typescript
+ ngOnInit() {
+    this.user = { id: this.route.snapshot.params['id'] }
+    this.route.params.subscribe((params: Params) => { this.user.id = params['id']; })
+ }
+```
+This subscription is automatically destroyed by Angular so you don't have to manually unsubscribe.
+
+### Query params and fragments
+
+Passing query parameters can be done like the following:
+```html
+<!-- Assuming you have defined a route like "/servers/:id/edit" -->
+<a
+ [routerLink]="['/servers', 5, 'edit]"
+ [queryParams]="{allowEdit: '1'}"
+ fragment="loading"
+>
+```
+
+Programmatically this could be done in the following way:
+
+```typescript
+export class MyComp {
+  constructor(private router: Router, private activatedRoute: ActivatedRoute) {
+  }
+  
+  // passing parameters
+  onLoadServer(id: number) {
+      this.router.navigate(['servers', id, 'edit'], {queryParams: { allowEdit: '1'}, fragment: 'loading'})
+  }
+  
+  // retrieving params
+  ngOnInit() {
+      // the methods below just retrieve the initial values but incapable of getting their updates
+      let queryParams = this.activatedRoute.snapshot.queryParams
+      let fragment = this.activatedRoute.snapshot.fragment
+    
+      // the following can be used to get their updates
+      this.activatedRoute.queryParams.subscribe()
+      this.activatedRoute.fragment.subscribe()
+  }
+}
+```
+you can also pass relative path to `navigate` method and to override the current query params for the activated route or 
+to preserve them:
+
+```typescript
+this.router.navigate(['servers', id, 'edit'], { relativeTo: this.route, queryParamsHandling: 'preserve|merge' })
+```
+
+### Redirection
+
+In case you want to manage 404:
+
+```typescript
+const routes: Routes = [
+  { path: '/servers', ...},
+  { path: 'not-found', component: NotFoundComponent },
+  { path: '**', redirectTo: 'not-found' }  // must be last    
+];
+```
+### Guards
+
+This should be executed before the route gets loaded and supports asynchronous operations.
+
+```typescript
+import {Injectable} from "@angular/core";
+
+@Injectable()
+export class AuthGuard implements CanActivate, CanActivateChild {
+  constructor(private authService: AuthService, private router: Router) {
+  }
+
+  canActivate(route: ActivatedRouteSnapshot, state: routerstateSnapshot) {
+      return this.canActivate(route, state)
+  }
+  
+  canActivate(route: ActivatedRouteSnapshot, state: routerstateSnapshot) {
+    return this.authService.isAuthenticated()
+            .then((authenticated: boolean) => {
+                if (authenticated) {
+                    return true;
+                }
+
+              this.router.navigate(['/'])
+            }) 
+  }
+}
+```
+
+Then you define the guard in the route specifications:
+
+```typescript
+const routes: Routes = [
+  // { path: '/servers', canActivateChild: [AuthGuard], ...},  to limit the guard to the children
+  { path: '/servers', canActivate: [AuthGuard], ...},
+  { path: 'not-found', component: NotFoundComponent },
+  { path: '**', redirectTo: 'not-found' }  // must be last    
+];
+```
+Also remember to add AuthGuard between the providers in the main AppModule.
+
+### Resources
+
+* [Angular Routing](https://angular.io/guide/routing-overview)
+
+## Section 13: Observables
+
+Observables are lazy Push collections of multiple values. To invoke the Observable and see these values, we need to
+subscribe to it. Pull and Push are two different protocols that describe how a data Producer can communicate with a data
+Consumer.
+
+|      | PRODUCER                                | CONSUMER                                |
+|------|-----------------------------------------|-----------------------------------------|
+| Pull | Passive: produces data when requested.  | Active: decides when data is requested. |
+| Push | Active: produces data at its own pace.  | Passive: reacts to received data.       |
+
+Every JavaScript Function is a Pull system. The function is a Producer of data, and the code that calls the function is
+consuming it by "pulling" out a single return value from its call. Promises are the most common type of Push system in
+JavaScript today.  
+RxJS introduces Observables, a new Push system for JavaScript. An Observable is a Producer of multiple values, "pushing"
+them to Observers (Consumers).  
+Then you can handle data, errors and completion. When an error occurs then the observable get cancelled and
+never completes.  
+The essential concepts in RxJS which solve async event management are:
+
+* **Observable**: represents the idea of an invokable collection of future values or events.
+* **Observer**: is a collection of callbacks that knows how to listen to values delivered by the Observable.
+* **Subscription**: represents the execution of an Observable, is primarily useful for cancelling the execution.
+* **Operators**: are pure functions that enable a functional programming style of dealing with collections with operations like map, filter, concat, reduce, etc.
+* **Subject**: is equivalent to an EventEmitter, and the only way of multicasting a value or event to multiple Observers.
+* **Schedulers**: are centralized dispatchers to control concurrency, allowing us to coordinate when computation happens on e.g. setTimeout or requestAnimationFrame or others.
+
+### Resources
+
+* [RxJs Playground](https://playcode.io/1701335)
