@@ -1,0 +1,86 @@
+<div class="row">
+  <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+      <label for="email" class="form-label">Email address</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        class="form-control"
+        formControlName="email"
+      >
+      <div
+        class="invalid-feedback"
+        *ngIf="!formGroup.get('email')?.valid &&
+                formGroup.get('email')?.touched &&
+                !formGroup.get('email')?.pending"
+      >
+        Please provide a valid email.
+      </div>
+      <label for="subscription" class="form-label">Subscription</label>
+      <select
+        class="form-select"
+        name="subscription"
+        id="subscription"
+        aria-label="Subscription"
+        formControlName="subscription"
+      >
+        <option value="Basic">Basic</option>
+        <option selected value="Advanced">Advanced</option>
+        <option value="Pro">Pro</option>
+      </select>
+      <label for="password" class="form-label">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        class="form-control"
+        formControlName="password"
+      >
+      <div
+        class="invalid-feedback"
+        *ngIf="!formGroup.get('password')?.valid && formGroup.get('password')?.touched"
+      >
+        Please provide a password.
+      </div>
+      <div class="hobbies" formArrayName="hobbies">
+        <div class="add-hobby">
+          Add your hobbies:
+          <button
+            type="button"
+            (click)="onAddHobby()"
+            class="btn btn-primary btn-sm"
+          >
+          Add hobby
+        </button>
+        </div>
+        <input
+          type="text"
+          [class]="'form-control ' + (!hobbyControl.valid ? 'ng-invalid' : '')"
+          *ngFor="let hobbyControl of hobbiesControls; let i = index"
+          [formControlName]="i"
+        >
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="!formGroup.valid">Submit</button>
+    </form>
+    <div class="invalid-feedback" *ngIf="!formGroup.valid && formGroup.touched">
+      Please correct the errors to submit
+    </div>
+  </div>
+</div>
+<div class="row" id="results" *ngIf="submitted">
+  <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+    <hr>
+    You've submitted:
+    <ul>
+      <li>Email: {{ email }}</li>
+      <li>Subscription: {{ subscription }} </li>
+      <li>Password: {{ password }}</li>
+      <li>Hobbies: <span *ngIf="hobbies.length === 0">no hobbies :-(</span>
+        <ul>
+          <li *ngFor="let hobby of hobbies">{{ hobby }}</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>

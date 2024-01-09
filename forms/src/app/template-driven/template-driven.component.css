@@ -1,0 +1,19 @@
+button[type="submit"] {
+  margin-top: 0.6rem;
+}
+
+input.ng-invalid.ng-touched {
+  border: 1px solid red;
+}
+
+#results {
+  margin-top: 0.6rem;
+}
+
+#results ul {
+  padding-left: 2rem;
+}
+
+.invalid-feedback {
+  display: block;
+}

@@ -530,3 +530,57 @@ The essential concepts in RxJS which solve async event management are:
 ### Resources
 
 * [RxJs Playground](https://playcode.io/1701335)
+
+## Section 15: Forms
+
+| Forms           | Details                                                                                                                                                                                                                                                                                                                                                                                                             |
+|-----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Reactive        | Provide direct, explicit access to the underlying form's object model. Compared to template-driven forms, they are more robust: they're more scalable, reusable, and testable. If forms are a key part of your application, or you're already using reactive patterns for building your application, use reactive forms.                                                                                            |
+| Template-driven | Rely on directives in the template to create and manipulate the underlying object model. They are useful for adding a simple form to an app, such as an email list signup form. They're straightforward to add to an app, but they don't scale as well as reactive forms. If you have very basic form requirements and logic that can be managed solely in the template, template-driven forms could be a good fit. |
+
+### Template driven
+
+It requires FormsModule to be imported:
+
+```typescript
+import { FormsModule } from '@angular/forms';
+```
+Then you add `ngModel` to the elements of your form that Angular should consider. Those elements
+must have also the attribute `name` so that the controls will be registered with that name.  
+The form element will get the directive `(ngSubmit)="onSubmit(formRef) #formRef=ngForm"` where we pass a form reference 
+to the method.
+
+```typescript
+class MyComponent {
+  /* alternative approach for accessing the form without passing the reference to submit
+  @ViewChild('formRef') myForm = 'ngForm' */
+    
+  onSubmit(formRef: NgForm) {
+    
+  }
+}
+```
+
+You can add [built-in validators](https://angular.io/api/forms/Validators) as attributes to your controls. HTML5 validation
+by default is disabled by Angular, you need to add `ngNativeValidate` to re-enable it.  
+Some CSS classes are automatically added when some forms event occurs, for example:
+* `ng-invalid`: if a field is not valid
+* `ng-touched`: when the user has typed something or at least put the focus on a field.
+
+Here is a form field example with validation:
+
+```html
+<input type="email" class="form-control" [ngModel]="myDefaultValue" required email #email="ngModel">
+<span class="help-block" *ngIf="!email.valid && email.touched">Please enter a valid email</span>
+```
+
+`ngModelGroup` can be used to group multiple controls into one object, that can also be used for validation.  
+You cn programmatically edit your form either using he form reference with the method `setValue` (totally replace its
+values) or the method `patchValue` (specifically change something).
+
+### Reactive forms
+
+
+### Resources
+
+* [Forms](https://angular.io/guide/forms-overview)

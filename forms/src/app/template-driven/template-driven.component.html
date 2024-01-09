@@ -1,0 +1,61 @@
+<div class="row">
+  <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+    <form #form="ngForm" (ngSubmit)="onSubmit(form)" novalidate>
+      <label for="email" class="form-label">Email address</label>
+      <input
+        type="email"
+        id="email"
+        #emailObj="ngModel"
+        name="email"
+        class="form-control"
+        required
+        email
+        ngModel
+      >
+      <div class="invalid-feedback" *ngIf="!emailObj.valid && emailObj.touched">
+        Please provide a valid email.
+      </div>
+      <label for="subscription" class="form-label">Subscription</label>
+      <select
+        class="form-select"
+        name="subscription"
+        [value]="subscription"
+        id="subscription"
+        [ngModel]="'Advanced'"
+        aria-label="Subscription"
+      >
+        <option value="Basic">Basic</option>
+        <option selected value="Advanced">Advanced</option>
+        <option value="Pro">Pro</option>
+      </select>
+      <label for="password" class="form-label">Password</label>
+      <input
+        type="password"
+        id="password"
+        #pass="ngModel"
+        name="password"
+        class="form-control"
+        required
+        ngModel
+      >
+      <div class="invalid-feedback" *ngIf="!pass.valid && pass.touched">
+        Please provide a password.
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="!form.valid">Submit</button>
+    </form>
+    <div class="invalid-feedback" *ngIf="!form.valid && form.touched">
+      Please correct the errors to submit
+    </div>
+  </div>
+</div>
+<div class="row" id="results" *ngIf="submitted && form.valid">
+  <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+    <hr>
+    You've submitted:
+    <ul>
+      <li>Email: {{ email }}</li>
+      <li>Subscription: {{ subscription }} </li>
+      <li>Password: {{ password }}</li>
+    </ul>
+  </div>
+</div>
