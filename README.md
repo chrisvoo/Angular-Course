@@ -584,3 +584,47 @@ values) or the method `patchValue` (specifically change something).
 ### Resources
 
 * [Forms](https://angular.io/guide/forms-overview)
+
+## Section 17: Pipes
+
+Pipes allow to transform output in your template. They can be built-in or custom. For example, to format a date as you
+want, you could use the `date` pipe (`dateObj` is a `Date` object):
+
+```typescript
+{{ dateObj | date:"MMM dd, yyyy 'at' hh:mm a" }}
+
+// pipes are chainable
+{{ dateObj | date:"MMM dd, yyyy 'at' hh:mm a" | uppercase }}
+```
+
+A custom pipe can be defined like this:
+
+```typescript
+import { Pipe, PipeTransform } from '@angular/core';
+/*
+ * Raise the value exponentially
+ * Takes an exponent argument that defaults to 1.
+ * Usage:
+ *   value | exponentialStrength:exponent
+ * Example:
+ *   {{ 2 | exponentialStrength:10 }}
+ *   formats to: 1024
+*/
+@Pipe({
+  standalone: true,
+  name: 'exponentialStrength'
+})
+export class ExponentialStrengthPipe implements PipeTransform {
+  transform(value: number, exponent = 1): number {
+    return Math.pow(value, exponent);
+  }
+}
+```
+This can be imported in a single component with `imports: [ExponentialStrengthPipe]` or put into the declarations of
+`AppModule` to be globally available.
+
+
+### Resources
+
+* [Pipes](https://angular.io/guide/pipes)
+* [List of built-in pipes](https://angular.io/api?status=stable&type=pipe)
