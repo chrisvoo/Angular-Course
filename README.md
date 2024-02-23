@@ -578,9 +578,6 @@ Here is a form field example with validation:
 You cn programmatically edit your form either using he form reference with the method `setValue` (totally replace its
 values) or the method `patchValue` (specifically change something).
 
-### Reactive forms
-
-
 ### Resources
 
 * [Forms](https://angular.io/guide/forms-overview)
@@ -628,3 +625,90 @@ This can be imported in a single component with `imports: [ExponentialStrengthPi
 
 * [Pipes](https://angular.io/guide/pipes)
 * [List of built-in pipes](https://angular.io/api?status=stable&type=pipe)
+
+## Section 18: HTTP
+
+Put `HttpClientModule` in the imports directive of `AppModule`.
+
+```typescript
+import { HttpClientModule } from '@angular/common/http';
+
+// You can then inject the HttpClient service as a dependency of an application class
+import { HttpClient } from '@angular/common/http';
+
+// example
+createAndStorePost(title: string, content: string) {
+  const postData: Post = { title: title, content: content };
+  this.http
+      .post<{ name: string }>(
+          'https://ng-complete-guide-c56d3.firebaseio.com/posts.json',
+          postData
+      )
+      .subscribe(
+          responseData => {
+            console.log(responseData);
+          },
+          error => {
+            this.error.next(error.message);
+          }
+      );
+}
+
+fetchPosts() {
+  return this.http
+      .get<{ [key: string]: Post }>(
+          'https://ng-complete-guide-c56d3.firebaseio.com/posts.json',
+          {
+            headers: new HttpHeaders({ 'Custom-Header': 'Hello' }),
+            params: new HttpParams().set('print', 'pretty'),
+            observe: 'body',
+            responseType: 'json'
+          }
+      )
+      .pipe(
+          map(responseData => {
+            const postsArray: Post[] = [];
+            for (const key in responseData) {
+              if (responseData.hasOwnProperty(key)) {
+                postsArray.push({ ...responseData[key], id: key });
+              }
+            }
+            return postsArray;
+          }),
+          catchError(errorRes => {
+            // Send to analytics server
+            return throwError(errorRes);
+          })
+      );
+}
+
+```
+`observe: 'body'` is the default but if you want the full response object, you can use 
+`observe: ' response'`. There is also `events` which contains not only the full response but also the event type (`HttpEventType`).  
+Here is an example of a combination of Rx operators (like [lastValueFrom](https://rxjs.dev/api/index/function/lastValueFrom)) and async/await:
+
+```typescript
+  // service  
+  Login(phone: string,password: string)
+  {
+    let _headers: HttpHeaders = new HttpHeaders({
+      'accept': 'application/json'
+    });
+    return this.http.post(this.url,{username,password},{headers:_headers})
+                .pipe(map(response=>response));
+  }
+  
+  // component
+  async Login(phone:string,password:string)
+  {
+    let token$ =  this.authService.Login(phone,password);
+    let token = await lastValueFrom(token$);
+  }
+```
+`lastValueFrom` converts an observable to a promise by subscribing to the observable, waiting for it to complete, and resolving the 
+returned promise with the last value from the observed stream.  
+WARNING: Only use this with observables you know will complete. If the source observable does
+not complete, you will end up with a promise that is hung up, and potentially all of the 
+state of an async function hanging out in memory. To avoid this situation, look into 
+adding something like timeout, take, takeWhile, or takeUntil amongst others.
+

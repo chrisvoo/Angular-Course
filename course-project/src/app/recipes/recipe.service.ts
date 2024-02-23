@@ -8,31 +8,16 @@ import {ShoppingListService} from "../shopping-list/shopping-list.service";
   providedIn: 'root'
 })
 export class RecipeService {
-  private recipes: Recipe[] = [
-    new Recipe(
-      "Meatballs",
-      "Awesome meatballs",
-      "https://toriavey.com/images/2011/01/TOA109_18-1-500x500.jpeg",
-      [
-        new Ingredient('Meat', 1),
-        new Ingredient('Potatoes', 5)
-      ]
-    ),
-    new Recipe(
-      "Salad",
-      "Healthy salad",
-      "https://upload.wikimedia.org/wikipedia/commons/3/39/Recipe.jpg",
-      [
-        new Ingredient('Salad', 1),
-        new Ingredient('Tomatoes', 5),
-      ]
-    )
-  ]
+  private recipes: Recipe[] = []
 
   recipesChanged: Subject<Recipe[]> = new Subject<Recipe[]>();
 
   constructor(private slService: ShoppingListService) {}
 
+  setRecipes(recipes: Recipe[]) {
+    this.recipes = recipes
+    this.recipesChanged.next(this.recipes.slice())
+  }
 
   getRecipe(id: number) {
     return this.recipes[id];
