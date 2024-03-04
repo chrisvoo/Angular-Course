@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import {NgForm} from "@angular/forms";
-import {AuthServiceService} from "./auth-service.service";
-import {catchError, throwError} from "rxjs";
+import {AuthResponseData, AuthServiceService} from "./auth-service.service";
+import {catchError, Observable, throwError} from "rxjs";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-auth',
@@ -11,8 +12,9 @@ import {catchError, throwError} from "rxjs";
 export class AuthComponent {
   isLoginMode = true;
   isLoading = false
+  error?: string = null;
 
-  constructor(private authService: AuthServiceService) {
+  constructor(private authService: AuthServiceService, private router: Router) {
   }
 
   onSwitchMode() {
@@ -25,34 +27,37 @@ export class AuthComponent {
     }
     const email = form.value.email;
     const password = form.value.password;
+    let authObs: Observable<AuthResponseData>
 
     this.isLoading = true
 
     if (this.isLoginMode) {
+      authObs = this.authService.login(email, password)
 
     } else {
-      this.authService.signup(email, password)
-        .pipe(
-          catchError((err, _) => {
-            this.isLoading = false
-            console.log(err)
-            return throwError(() => new Error('Something bad happened'))
-          })
-        )
-        .subscribe(
-          /*
-          email: "email@gmail.com",
-          expiresIn: "3600"
-          idToken: "eyJhbGciOiJSUzI1NiI",
-          kind "identitytoolkit#SignupNewUserResponse",
-          localId:"aueHbPVo4GNhpPHnEDUR988tqXy1",
-          refreshToken: "AMf-vBw8ohO2p7EsWqs */
-        (data) => {
-            this.isLoading = false
-            console.log(data)
-          }
-        )
+      authObs = this.authService.signup(email, password)
     }
+
+    authObs.pipe(
+      catchError((err, _) => {
+        this.isLoading = false
+        this.error = 'An error occurred: ' + err.error.error.message
+        return throwError(() => new Error('Something bad happened'))
+      })
+    )
+      .subscribe(
+        /*
+        email: "email@gmail.com",
+        expiresIn: "3600"
+        idToken: "eyJhbGciOiJSUzI1NiI",
+        kind "identitytoolkit#SignupNewUserResponse",
+        localId:"aueHbPVo4GNhpPHnEDUR988tqXy1",
+        refreshToken: "AMf-vBw8ohO2p7EsWqs */
+        (data) => {
+          this.isLoading = false
+          this.router.navigate(['/recipes'])
+        }
+      )
 
     form.reset()
   }
