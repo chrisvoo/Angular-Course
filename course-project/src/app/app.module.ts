@@ -14,9 +14,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.component';
 import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
 import {NgOptimizedImage} from "@angular/common";
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import { AuthComponent } from './auth/auth.component';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
+import {AuthInterceptor} from "./auth/auth.interceptor";
 
 @NgModule({
   declarations: [
@@ -42,7 +43,7 @@ import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinne
       NgOptimizedImage,
       HttpClientModule
     ],
-  providers: [],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
