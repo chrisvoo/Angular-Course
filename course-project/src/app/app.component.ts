@@ -1,22 +1,19 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {AuthServiceService} from "./auth/auth-service.service";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Course project';
-  activeSection = 'recipe'
 
-  onClickedMenuItem($event) {
-    switch ($event) {
-      case 'Recipes':
-        this.activeSection = 'recipe';
-        break;
-      case 'Shopping List':
-        this.activeSection = 'shopping_list';
-        break;
-    }
+  constructor(private authService: AuthServiceService) {
   }
+
+  ngOnInit(): void {
+    this.authService.autoLogin()
+  }
+
 }

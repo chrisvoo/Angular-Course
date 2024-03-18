@@ -712,3 +712,10 @@ not complete, you will end up with a promise that is hung up, and potentially al
 state of an async function hanging out in memory. To avoid this situation, look into 
 adding something like timeout, take, takeWhile, or takeUntil amongst others.
 
+## Section 21: Dynamic components
+
+![Dynamic components.png](course-project%2Fimages%2FDynamic%20components.png)
+
+### Resources
+
+* [Dynamic component Loader](https://angular.io/guide/dynamic-component-loader)

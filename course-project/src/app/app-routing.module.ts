@@ -8,10 +8,16 @@ import {RecipeDetailComponent} from "./recipes/recipe-detail/recipe-detail.compo
 import {RecipeEditComponent} from "./recipes/recipe-edit/recipe-edit.component";
 import {recipesResolver} from "./recipes/recipes.resolver";
 import {AuthComponent} from "./auth/auth.component";
+import {authGuard} from "./auth/auth.guard";
 
 const appRoutes: Routes = [
   { path: '', redirectTo: '/recipes', pathMatch: 'full' },
-  { path: 'recipes', component: RecipesComponent, children: [
+  { path: 'recipes',
+    component: RecipesComponent,
+    canActivate: [
+      authGuard
+    ],
+    children: [
       { path: '', component: RecipeStartComponent },
       { path: 'new', component: RecipeEditComponent }, // before :id, otherwise new may be interpreted like an ID
       { path: ':id', component: RecipeDetailComponent, resolve: { recipe: recipesResolver } },

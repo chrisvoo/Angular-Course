@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, ComponentFactoryResolver} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {AuthResponseData, AuthServiceService} from "./auth-service.service";
 import {catchError, Observable, throwError} from "rxjs";
@@ -14,8 +14,10 @@ export class AuthComponent {
   isLoading = false
   error?: string = null;
 
-  constructor(private authService: AuthServiceService, private router: Router) {
-  }
+  constructor(
+    private authService: AuthServiceService,
+    private router: Router
+  ) {  }
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode
@@ -42,6 +44,7 @@ export class AuthComponent {
       catchError((err, _) => {
         this.isLoading = false
         this.error = 'An error occurred: ' + err.error.error.message
+        this.showErrorAlert(this.error)
         return throwError(() => new Error('Something bad happened'))
       })
     )
@@ -60,5 +63,28 @@ export class AuthComponent {
       )
 
     form.reset()
+  }
+
+  onHandleError() {
+    this.error = null
+  }
+
+  private showErrorAlert(message: string) {
+    // const alertCmp = new AlertComponent();
+    // const hostViewContainerRef = this.alertHost.viewContainerRef;
+    // hostViewContainerRef.clear();
+    // hostViewContainerRef.createComponent(alertCmp);
+
+    // const alertCmpFactory = this.componentFactoryResolver.resolveComponentFactory(
+    //   AlertComponent
+    // );
+    // const hostViewContainerRef = this.alertHost.viewContainerRef;
+    // hostViewContainerRef.clear();
+    // const componentRef = hostViewContainerRef.createComponent(alertCmpFactory);
+    // componentRef.instance.message = message;
+    // this.closeSub = componentRef.instance.close.subscribe(() => {
+    //   this.closeSub.unsubscribe();
+    //   hostViewContainerRef.clear();
+    // })
   }
 }
