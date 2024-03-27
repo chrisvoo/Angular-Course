@@ -716,6 +716,34 @@ adding something like timeout, take, takeWhile, or takeUntil amongst others.
 
 ![Dynamic components.png](course-project%2Fimages%2FDynamic%20components.png)
 
+## Section 24: Standalone components
+
+Advantages:
+
+* **Reduced Boilerplate**: eliminate the need for creating and managing NgModule files, 
+offering significant time and effort savings, particularly for smaller applications.
+* **Enhanced Readability**: they're self-contained and do not rely on external dependencies, making them easier
+to comprehend and maintain.
+* **Effective Tree-Shaking**: they can be more efficiently tree-shaken, resulting in reduced bundle sizes for
+production applications.
+
+Standalone components are an excellent choice for most new Angular applications. They are particularly well-suited
+for small and medium-sized projects and applications that follow the Single Component Angular Module (SCAM) pattern.  
+Here is a new schematic for adding such components:
+
+```bash
+yarn add @wishtack/schematics
+yarn ng g @wishtack/schematics/scam hello-world
+```
+
+To create a standalone component you have to:
+
+* add `standalone: true` in the `Component` decorator
+* avoid to put it in the `declarations` property in an NgModule, do it in the `import` property (just like you
+did for modules)
+* you can import other shared modules in your standalone components in the `import` property (or turn other components or
+directives as standalone too)
+
 ### Resources
 
 * [Dynamic component Loader](https://angular.io/guide/dynamic-component-loader)

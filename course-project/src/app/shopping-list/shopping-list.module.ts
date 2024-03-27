@@ -7,7 +7,7 @@ import {RouterModule, Routes} from "@angular/router";
 import {SharedModule} from "../shared/shared.module";
 
 const routes: Routes = [
-  { path: 'shopping-list', component: ShoppingListComponent }
+  { path: '', component: ShoppingListComponent }
 ]
 
 @NgModule({
@@ -16,7 +16,6 @@ const routes: Routes = [
     ShoppingEditComponent,
   ],
   imports: [
-    BrowserModule,
     SharedModule,
     FormsModule,
     RouterModule.forChild(routes)

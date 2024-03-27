@@ -13,7 +13,7 @@ import {recipesResolver} from "./recipes.resolver";
 import {SharedModule} from "../shared/shared.module";
 
 const routes: Routes = [
-  { path: 'recipes',
+  { path: '',
     component: RecipesComponent,
     canActivate: [
       authGuard
