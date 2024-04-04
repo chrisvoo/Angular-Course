@@ -527,6 +527,8 @@ The essential concepts in RxJS which solve async event management are:
 * **Subject**: is equivalent to an EventEmitter, and the only way of multicasting a value or event to multiple Observers.
 * **Schedulers**: are centralized dispatchers to control concurrency, allowing us to coordinate when computation happens on e.g. setTimeout or requestAnimationFrame or others.
 
+![Differences between subscribers](/Users/christian.castelli/GitHub/Angular-Course/images/subscribers.png)
+
 ### Resources
 
 * [RxJs Playground](https://playcode.io/1701335)
@@ -716,6 +718,11 @@ adding something like timeout, take, takeWhile, or takeUntil amongst others.
 
 ![Dynamic components.png](course-project%2Fimages%2FDynamic%20components.png)
 
+### Resources
+
+* [Dynamic component Loader](https://angular.io/guide/dynamic-component-loader)
+
+
 ## Section 24: Standalone components
 
 Advantages:
@@ -744,6 +751,85 @@ did for modules)
 * you can import other shared modules in your standalone components in the `import` property (or turn other components or
 directives as standalone too)
 
+## Section 25: Angular signals
+
+A new way of handling change detection. In a typical Angular app changes are detected automatically. Also
+the UI is updated automatically. The downside is that performance is affected and the bundle size is increased.  
+With Signals this is not automatic and Angular updates only the parts of the UI where the data ("signal") is used.  
+Signals can be modified with the following methods:
+
+* `set` for setting a new value
+* `update`: for updating the value based on the old one.
+
+```typescript
+import { NgFor } from '@angular/common';
+import { Component, signal, computed, effect } from '@angular/core';
+
+@Component({
+  selector: 'app-signals',
+  templateUrl: './signals.component.html',
+  standalone: true,
+  imports: [NgFor],
+})
+export class SignalsComponent {
+  actions = signal<string[]>([]);
+  counter = signal(0);
+  doubleCounter = computed(() => this.counter() * 2);
+
+  constructor() {
+    effect(() => console.log(this.counter()));
+  }
+
+  increment() {
+    this.counter.set(this.counter() + 1);
+    this.actions.update((oldActions) => oldActions.push('INCREMENT'));
+  }
+
+  decrement() {
+    this.counter.update((oldCounter) => oldCounter - 1);
+    this.actions.update((oldActions) => [...oldActions, 'DECREMENT']);
+  }
+}
+```
+
+For reading the values you use the signal as a function.  
+A computed signal derives its value from other signals. Define one using computed and specifying a derivation 
+function:
+
+```typescript
+const count: WritableSignal<number> = signal(0);
+const doubleCount: Signal<number> = computed(() => count() * 2);
+```
+
+The doubleCount signal depends on count. Whenever count updates, Angular knows that anything which depends on either 
+count or doubleCount needs to update as well. doubleCount's derivation function does not run to calculate its value 
+until the first time doubleCount is read. Once calculated, this value is cached, and future reads of doubleCount will 
+return the cached value without recalculating. When count changes, it tells doubleCount that its cached value is no
+longer valid, and the value is only recalculated on the next read of doubleCount. As a result, it's safe to perform 
+computationally expensive derivations in computed signals, such as filtering arrays.  
+You cannot directly assign values to a computed signal.  
+Signals are useful because they can notify interested consumers when they change. An effect is an operation that runs 
+whenever one or more signal values change. Here are some examples of situations where an effect might be a good solution:
+
+* Logging data being displayed and when it changes, either for analytics or as a debugging tool
+* Keeping data in sync with window.localStorage
+* Adding custom DOM behavior that can't be expressed with template syntax
+* Performing custom rendering to a <canvas>, charting library, or other third party UI library
+
+```typescript
+effect(() => {
+  console.log(`The current count is: ${count()}`);
+});
+```
 ### Resources
 
-* [Dynamic component Loader](https://angular.io/guide/dynamic-component-loader)
+* [Angular Signals](https://angular.io/guide/signals)
+
+## Section 26: NgRx
+
+NgRx is a state management library inspired by Redux for Angular applications. It introduces a unidirectional data flow
+and a centralized store for managing the application state. NgRx Store is most suitable for large and complex
+applications where state management becomes critical.  
+It must be installed with `ng add @ngrx/store`
+
+![NgRX](/Users/christian.castelli/GitHub/Angular-Course/images/ngrx.png)
