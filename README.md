@@ -2,23 +2,46 @@
 
 These notes and the code are taken from the [udemy course](https://www.udemy.com/course/the-complete-guide-to-angular-2) by [Maximilian Schwarzmüller](https://www.udemy.com/user/maximilian-schwarzmuller/).
 
-- [Angular Course](#angular-course)
-  - [Angular CLI cheatsheet](#angular-cli-cheatsheet)
-  - [Section 1](#section-1)
-    - [Styles](#styles)
-    - [Resources](#resources)
-  - [Section 2](#section-2)
-    - [Directives](#directives)
-      - [Attribute directives](#attribute-directives)
-    - [Resources](#resources-1)
-  - [Section 3 / 4](#section-3--4)
-  - [Section 5](#section-5)
-    - [@Input: Passing data to component](#input-passing-data-to-component)
-    - [@Output: sharing content with other components](#output-sharing-content-with-other-components)
-    - [Style encapsulation](#style-encapsulation)
-    - [References to HTML elements](#references-to-html-elements)
-    - [Accessing DOM elements from the components](#accessing-dom-elements-from-the-components)
-    - [Content projection](#content-projection)
+* [Angular Course](#angular-course)
+  * [Angular CLI cheatsheet](#angular-cli-cheatsheet)
+  * [Section 1](#section-1)
+    * [Styles](#styles)
+    * [Resources](#resources)
+  * [Section 2](#section-2)
+    * [Directives](#directives)
+      * [Attribute directives](#attribute-directives)
+      * [Structural directives](#structural-directives)
+    * [Resources](#resources-1)
+  * [Section 3 / 4](#section-3--4)
+  * [Section 5](#section-5)
+    * [@Input: Passing data to component](#input-passing-data-to-component)
+    * [@Output: sharing content with other components](#output-sharing-content-with-other-components)
+    * [Style encapsulation](#style-encapsulation)
+    * [References to HTML elements](#references-to-html-elements)
+    * [Accessing DOM elements from the components](#accessing-dom-elements-from-the-components)
+    * [Content projection](#content-projection)
+  * [Section 9: Services and Dependency injection](#section-9-services-and-dependency-injection)
+    * [Resources](#resources-2)
+  * [Section 11: Routing](#section-11-routing)
+    * [Accessing route params](#accessing-route-params)
+    * [Query params and fragments](#query-params-and-fragments)
+    * [Redirection](#redirection)
+    * [Guards](#guards)
+    * [Resources](#resources-3)
+  * [Section 13: Observables](#section-13-observables)
+    * [Resources](#resources-4)
+  * [Section 15: Forms](#section-15-forms)
+    * [Template driven](#template-driven)
+    * [Resources](#resources-5)
+  * [Section 17: Pipes](#section-17-pipes)
+    * [Resources](#resources-6)
+  * [Section 18: HTTP](#section-18-http)
+  * [Section 21: Dynamic components](#section-21-dynamic-components)
+    * [Resources](#resources-7)
+  * [Section 24: Standalone components](#section-24-standalone-components)
+  * [Section 25: Angular signals](#section-25-angular-signals)
+    * [Resources](#resources-8)
+  * [Section 26: NgRx](#section-26-ngrx)
 
 
 ## Angular CLI cheatsheet
@@ -527,7 +550,7 @@ The essential concepts in RxJS which solve async event management are:
 * **Subject**: is equivalent to an EventEmitter, and the only way of multicasting a value or event to multiple Observers.
 * **Schedulers**: are centralized dispatchers to control concurrency, allowing us to coordinate when computation happens on e.g. setTimeout or requestAnimationFrame or others.
 
-![Differences between subscribers](/Users/christian.castelli/GitHub/Angular-Course/images/subscribers.png)
+![Differences between subscribers](./images/subscribers.png)
 
 ### Resources
 
@@ -716,7 +739,7 @@ adding something like timeout, take, takeWhile, or takeUntil amongst others.
 
 ## Section 21: Dynamic components
 
-![Dynamic components.png](course-project%2Fimages%2FDynamic%20components.png)
+![Dynamic components.png](./images/dynamic_components.png)
 
 ### Resources
 
@@ -821,6 +844,7 @@ effect(() => {
   console.log(`The current count is: ${count()}`);
 });
 ```
+
 ### Resources
 
 * [Angular Signals](https://angular.io/guide/signals)
@@ -832,4 +856,5 @@ and a centralized store for managing the application state. NgRx Store is most s
 applications where state management becomes critical.  
 It must be installed with `ng add @ngrx/store`
 
-![NgRX](/Users/christian.castelli/GitHub/Angular-Course/images/ngrx.png)
+![NgRX](./images/ngrx.png)
+

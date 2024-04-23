@@ -7,6 +7,9 @@ import { AppRoutingModule } from './app-routing.module';
 import {NgOptimizedImage} from "@angular/common";
 import {HttpClientModule} from "@angular/common/http";
 import {SharedModule} from "./shared/shared.module";
+import { StoreModule } from '@ngrx/store';
+import {shoppingListReducerReducer} from "./shopping-list/store/shopping-list.reducer";
+import {CoreModule} from "./core.module";
 
 @NgModule({
   declarations: [
@@ -19,7 +22,11 @@ import {SharedModule} from "./shared/shared.module";
     AppRoutingModule,
     NgOptimizedImage,
     HttpClientModule,
-    SharedModule
+    SharedModule,
+    CoreModule,
+    StoreModule.forRoot({
+      shoppingList: shoppingListReducerReducer
+    }, {})
   ],
   bootstrap: [AppComponent]
 })
