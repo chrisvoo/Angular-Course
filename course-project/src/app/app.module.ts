@@ -8,8 +8,9 @@ import {NgOptimizedImage} from "@angular/common";
 import {HttpClientModule} from "@angular/common/http";
 import {SharedModule} from "./shared/shared.module";
 import { StoreModule } from '@ngrx/store';
-import {shoppingListReducerReducer} from "./shopping-list/store/shopping-list.reducer";
 import {CoreModule} from "./core.module";
+import {appReducers} from "./store/store.model";
+import { EffectsModule } from '@ngrx/effects';
 
 @NgModule({
   declarations: [
@@ -24,9 +25,8 @@ import {CoreModule} from "./core.module";
     HttpClientModule,
     SharedModule,
     CoreModule,
-    StoreModule.forRoot({
-      shoppingList: shoppingListReducerReducer
-    }, {})
+    StoreModule.forRoot(appReducers, {}),
+    EffectsModule.forRoot([])
   ],
   bootstrap: [AppComponent]
 })

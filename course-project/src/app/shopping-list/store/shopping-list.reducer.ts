@@ -1,6 +1,13 @@
 import {createReducer, on} from "@ngrx/store";
 import {Ingredient} from "../../shared/ingredient.model";
-import {addIngredient, addIngredients, deleteIngredient, updateIngredient} from "./shopping-list.actions";
+import {
+  addIngredient,
+  addIngredients,
+  deleteIngredient,
+  startEdit,
+  stopEdit,
+  updateIngredient
+} from "./shopping-list.actions";
 
 const initialState = {
   ingredients: [
@@ -11,6 +18,7 @@ const initialState = {
   editedIngredientIndex: -1
 }
 
+// never pass references to objects, always pass new objects
 export const shoppingListReducerReducer = createReducer(
   initialState,
   on(addIngredient, (state, action) => (
@@ -26,18 +34,19 @@ export const shoppingListReducerReducer = createReducer(
     }
   )),
   on(updateIngredient, (state, action) => {
-    const { index } = action
-    const ingredient = state.ingredients[index]
+    const ingredient = state.ingredients[state.editedIngredientIndex]
     const updatedIngredient = {
       ...ingredient,
       ...action.ingredient
     }
     const updatedIngredients = [...state.ingredients]
-    updatedIngredients[index] = updatedIngredient
+    updatedIngredients[state.editedIngredientIndex] = updatedIngredient
 
     return {
       ...state,
-      ingredients: updatedIngredients
+      ingredients: updatedIngredients,
+      editedIngredient: null,
+      editedIngredientIndex: -1
     }
   }),
   on(deleteIngredient, (state, action) => {
@@ -45,8 +54,24 @@ export const shoppingListReducerReducer = createReducer(
     return {
       ...state,
       ingredients: state.ingredients.filter((ingredient, index) => {
-        return index !== action.value
-      })
+        return index !== state.editedIngredientIndex
+      }),
+      editedIngredient: null,
+      editedIngredientIndex: -1
+    }
+  }),
+  on(startEdit, (state, action) => {
+    return {
+      ...state,
+      editedIngredientIndex: action.index,
+      editedIngredient: {...state.ingredients[action.index]}
+    }
+  }),
+  on(stopEdit, (state) => {
+    return {
+      ...state,
+      editedIngredient: null,
+      editedIngredientIndex: -1
     }
   })
 );

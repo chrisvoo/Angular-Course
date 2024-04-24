@@ -858,3 +858,102 @@ It must be installed with `ng add @ngrx/store`
 
 ![NgRX](./images/ngrx.png)
 
+Effects are an RxJS powered side effect model for Store. Effects are where you handle 
+tasks such as fetching data, long-running tasks that produce multiple events, and other 
+external interactions where your components don't need explicit knowledge of these 
+interactions. Example:
+
+```typescript
+content_copy
+import { Injectable } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { map, exhaustMap, catchError } from 'rxjs/operators';
+import { MoviesService } from './movies.service';
+
+@Injectable()
+export class MoviesEffects {
+
+  loadMovies$ = createEffect(() => this.actions$.pipe(
+    ofType('[Movies Page] Load Movies'), // The stream of actions is then flattened and mapped into a new observable using the exhaustMap operator.
+    exhaustMap(() => this.moviesService.getAll()
+      .pipe(
+        map(movies => ({ type: '[Movies API] Movies Loaded Success', payload: movies })),
+        catchError(() => of({ type: '[Movies API] Movies Loaded Error' }))
+      ))
+    )
+  );
+
+  constructor(
+    private actions$: Actions,
+    private moviesService: MoviesService
+  ) {}
+}
+```
+Event streams are not limited to dispatched actions, but can be any observable that 
+produces new actions, such as observables from the Angular Router, observables created 
+from browser events, and other observable streams.
+
+```typescript
+// functional effect
+content_copy
+import { inject } from '@angular/core';
+import { catchError, exhaustMap, map, of, tap } from 'rxjs';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+
+import { ActorsService } from './actors.service';
+import { ActorsPageActions } from './actors-page.actions';
+import { ActorsApiActions } from './actors-api.actions';
+
+export const loadActors = createEffect(
+  (actions$ = inject(Actions), actorsService = inject(ActorsService)) => {
+    return actions$.pipe(
+      ofType(ActorsPageActions.opened),
+      exhaustMap(() =>
+        actorsService.getAll().pipe(
+          map((actors) => ActorsApiActions.actorsLoadedSuccess({ actors })),
+          catchError((error: { message: string }) =>
+            of(ActorsApiActions.actorsLoadedFailure({ errorMsg: error.message }))
+          )
+        )
+      )
+    );
+  },
+  { functional: true }
+);
+```
+If additional metadata is needed to perform an effect besides the initiating action's type, we should rely on passed 
+metadata from an action creator's props method.
+
+```typescript
+login$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(LoginPageActions.login),
+      exhaustMap(action =>
+        this.authService.login(action.credentials).pipe(
+          map(user => AuthApiActions.loginSuccess({ user })),
+          catchError(error => of(AuthApiActions.loginFailure({ error })))
+        )
+      )
+    )
+  );
+```
+However, there may be cases when the required metadata is only accessible from state. When state is needed, the RxJS 
+`withLatestFrom` or the @ngrx/effects `concatLatestFrom` operators can be used to provide it.
+
+```typescript
+addBookToCollectionSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(CollectionApiActions.addBookSuccess),
+        concatLatestFrom(action => this.store.select(fromBooks.getCollectionBookIds)),
+        tap(([action, bookCollection]) => {
+          if (bookCollection.length === 1) {
+            window.alert('Congrats on adding your first book!');
+          } else {
+            window.alert('You have added book number ' + bookCollection.length);
+          }
+        })
+      ),
+    { dispatch: false }
+  );
+```
