@@ -1,22 +1,26 @@
-import {Component, ComponentFactoryResolver} from '@angular/core';
+import {Component, ComponentFactoryResolver, OnInit} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {AuthResponseData, AuthServiceService} from "./auth-service.service";
 import {catchError, Observable, throwError} from "rxjs";
 import {Router} from "@angular/router";
+import {AppStore} from "../store/store.model";
+import {Store} from "@ngrx/store";
+import {loginStart} from "./store/auth.actions";
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
-export class AuthComponent {
+export class AuthComponent implements OnInit {
   isLoginMode = true;
   isLoading = false
   error?: string = null;
 
   constructor(
     private authService: AuthServiceService,
-    private router: Router
+    private router: Router,
+    private store: Store<AppStore>
   ) {  }
 
   onSwitchMode() {
@@ -34,12 +38,14 @@ export class AuthComponent {
     this.isLoading = true
 
     if (this.isLoginMode) {
-      authObs = this.authService.login(email, password)
-
+      // authObs = this.authService.login(email, password)
+      this.store.dispatch(loginStart({ value: {email, password }}))
     } else {
       authObs = this.authService.signup(email, password)
     }
 
+
+    /*
     authObs.pipe(
       catchError((err, _) => {
         this.isLoading = false
@@ -49,18 +55,11 @@ export class AuthComponent {
       })
     )
       .subscribe(
-        /*
-        email: "email@gmail.com",
-        expiresIn: "3600"
-        idToken: "eyJhbGciOiJSUzI1NiI",
-        kind "identitytoolkit#SignupNewUserResponse",
-        localId:"aueHbPVo4GNhpPHnEDUR988tqXy1",
-        refreshToken: "AMf-vBw8ohO2p7EsWqs */
         (data) => {
           this.isLoading = false
           this.router.navigate(['/recipes'])
         }
-      )
+      ) */
 
     form.reset()
   }
@@ -86,5 +85,15 @@ export class AuthComponent {
     //   this.closeSub.unsubscribe();
     //   hostViewContainerRef.clear();
     // })
+  }
+
+  ngOnInit(): void {
+    this.store.select('auth').subscribe(authState => {
+      this.isLoading = authState.loading
+      this.error = authState.authError
+      if (this.error) {
+        this.showErrorAlert(this.error)
+      }
+    })
   }
 }

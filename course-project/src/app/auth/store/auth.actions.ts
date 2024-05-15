@@ -12,6 +12,11 @@ export const loginStart = createAction(
   props<{value: { email: string, password: string}}>(),
 );
 
+export const loginFailed = createAction(
+  '[Auth] Login failed',
+  props<{value: { message: string}}>(),
+);
+
 export const logout = createAction(
   '[Auth] Logout'
 );
